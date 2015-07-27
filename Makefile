@@ -249,6 +249,10 @@ ifeq ($(OSX), 1)
 		endif
 		# clang throws this warning for cuda headers
 		WARNINGS += -Wno-unneeded-internal-declaration
+		# teach nvcc about c++11
+		NVCCFLAGS += -std=c++11
+		# allow conversions between vUInt16 and __m128i
+		CXXFLAGS += -flax-vector-conversions
 	endif
 	# gtest needs to use its own tuple to not conflict with clang
 	COMMON_FLAGS += -DGTEST_USE_OWN_TR1_TUPLE=1
@@ -257,6 +261,8 @@ ifeq ($(OSX), 1)
 	# we need to explicitly ask for the rpath to be obeyed
 	DYNAMIC_FLAGS := -install_name @rpath/libcaffe.so
 	ORIGIN := @loader_path
+	# don't define macros called "check"
+	COMMON_FLAGS += -D__ASSERT_MACROS_DEFINE_VERSIONS_WITHOUT_UNDERSCORES=0
 else
 	ORIGIN := \$$ORIGIN
 endif
